@@ -1,10 +1,10 @@
 const express = require("express");
 const {Router} = express;
-const routerProducto = Router();
+const routerCarrito = Router();
 const multer = require("multer");
 const storage = multer({destinantion: "/upload"});
 
-let productContainer = require("../clases/productoClass");
+let carritoContainer = require("../clases/carritoClass.js");
 
 const middlewareAutenticacion = (req, res, next) => {
     req.user = {
@@ -19,19 +19,19 @@ const middlewareAutorizacion = (req, res, next) => {
     else res.status(403).send('Vos no tenes permisos');
 }
 
-routerProducto.get("/productos", middlewareAutenticacion, (req, res, next) => {
+routerCarrito.get("/carrito", middlewareAutenticacion, (req, res, next) => {
     const mostrarProductos = async () => {
-        const productos = new productContainer("productos.txt");
+        const productos = new carritoContainer("carrito.txt");
         const showProductos = await productos.getAll();
         res.send(showProductos);
     };
     mostrarProductos();
 });
 
-routerProducto.get("/productos/:id", middlewareAutenticacion, middlewareAutorizacion, (req, res, next) => {
+routerCarrito.get("/productos/:id", middlewareAutenticacion, middlewareAutorizacion, (req, res, next) => {
     let id = parseInt(req.params.id);
     const mostrarProdID = async () => {
-        const productos = new productContainer("productos.txt");
+        const productos = new carritoContainer("carrito.txt");
         const mostrarID = await productos.getById(id);
         res.send(mostrarID);
     };
@@ -49,9 +49,9 @@ const productoSubido = storage.fields([
     },
 ]);
 
-routerProducto.post("/productos", productoSubido, middlewareAutenticacion, middlewareAutorizacion, async (req, res, next) => {
+routerCarrito.post("/productos", productoSubido, middlewareAutenticacion, middlewareAutorizacion, async (req, res, next) => {
     const subirProduct = async () => {
-        let produc = new productContainer("productos.txt");
+        let produc = new carritoContainer("carrito.txt");
         if (
             req.body.title === "" ||
             req.body.price === "" ||
@@ -65,21 +65,21 @@ routerProducto.post("/productos", productoSubido, middlewareAutenticacion, middl
             });
         } else {
             await produc.metodoSave(req.body);
-           return res.send(req.body);
+            return res.send(req.body);
         }
         next();
     };
     subirProduct();
 });
 
-routerProducto.delete("/productos/:id", middlewareAutenticacion, middlewareAutorizacion, (req, res) => {
+routerCarrito.delete("/carrito/:id", middlewareAutenticacion, middlewareAutorizacion, (req, res) => {
     let id = parseInt(req.params.id);
     const eliminoPorID = async () => {
-        const productos = new productContainer("productos.txt");
+        const productos = new carritoContainer("carrito.txt");
         const mostrarID = await productos.deleteById(id);
         res.send(`elemento con el ${id} eliminado`);
     };
     eliminoPorID();
 })
 
-module.exports = {routerProducto};
+module.exports = {routerCarrito};

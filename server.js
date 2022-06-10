@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const { routerProducto } = require('./routers/routerProducto')
+const { routerCarrito } = require('./routers/routerCarrito')
 const PORT = process.env.PORT || 8080;
 
 // Codigo del server
@@ -17,6 +18,7 @@ app.use(express.static("public"));
 
 // Router
 app.use("/api", routerProducto);
+app.use("/api", routerCarrito);
 
 app.use(function(req, res) {
     // request invalida
