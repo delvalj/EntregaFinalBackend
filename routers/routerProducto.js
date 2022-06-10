@@ -1,15 +1,15 @@
 const express = require("express");
-const { Router } = express;
+const {Router} = express;
 const routerProducto = Router();
 const multer = require("multer");
-const storage = multer({ destinantion: "/upload" });
+const storage = multer({destinantion: "/upload"});
 
 let productContainer = require("../clases/main");
 
 const middlewareAutenticacion = (req, res, next) => {
     req.user = {
         fullName: 'Joaquin Del Val',
-        isAdmin: false
+        isAdmin: true
     };
     next();
 }
@@ -19,8 +19,7 @@ const middlewareAutorizacion = (req, res, next) => {
     else res.status(403).send('Vos no tenes permisos');
 }
 
-
-routerProducto.get("/productos", middlewareAutenticacion, middlewareAutorizacion ,(req, res, next) => {
+routerProducto.get("/productos", middlewareAutenticacion, (req, res, next) => {
     const mostrarProductos = async () => {
         const productos = new productContainer("productos.txt");
         const showProductos = await productos.getAll();
@@ -29,7 +28,7 @@ routerProducto.get("/productos", middlewareAutenticacion, middlewareAutorizacion
     mostrarProductos();
 });
 
-routerProducto.get("/productos/:id", (req, res, next) => {
+routerProducto.get("/productos/:id", middlewareAutenticacion, middlewareAutorizacion, (req, res, next) => {
     let id = parseInt(req.params.id);
     const mostrarProdID = async () => {
         const productos = new productContainer("productos.txt");
@@ -40,18 +39,28 @@ routerProducto.get("/productos/:id", (req, res, next) => {
 });
 
 const productoSubido = storage.fields([
-    { title: "title", price: "price", thumbnail: "thumbnail" },
+    {
+        title: "title",
+        price: "price",
+        thumbnail: "thumbnail",
+        description: "descripcion",
+        codigo: null,
+        stock: null
+    },
 ]);
 
-routerProducto.post("/productos", productoSubido, async (req, res, next) => {
+routerProducto.post("/productos", productoSubido, middlewareAutenticacion, middlewareAutorizacion, async (req, res, next) => {
     const subirProduct = async () => {
         let produc = new productContainer("productos.txt");
         if (
             req.body.title === "" ||
             req.body.price === "" ||
-            req.body.thumbnail === ""
+            req.body.thumbnail === "" ||
+            req.body.description === "" ||
+            req.body.codigo === "" ||
+            req.body.stock === ""
         ) {
-            res.status(400).send({
+            return res.status(400).send({
                 error: "No se pudo cargar el producto. Complete los campos vacios.",
             });
         } else {
@@ -63,7 +72,7 @@ routerProducto.post("/productos", productoSubido, async (req, res, next) => {
     subirProduct();
 });
 
-routerProducto.delete("/productos/:id", (req, res) => {
+routerProducto.delete("/productos/:id", middlewareAutenticacion, middlewareAutorizacion, (req, res) => {
     let id = parseInt(req.params.id);
     const eliminoPorID = async () => {
         const productos = new productContainer("productos.txt");
@@ -73,4 +82,4 @@ routerProducto.delete("/productos/:id", (req, res) => {
     eliminoPorID();
 })
 
-module.exports = { routerProducto };
+module.exports = {routerProducto};

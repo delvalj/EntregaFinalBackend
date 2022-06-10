@@ -15,20 +15,6 @@ app.use(express.urlencoded({ extended: true }));
 // Va a buscar en la carpeta PUBLIC si existe el archivo buscado.
 app.use(express.static("public"));
 
-const middlewareAutenticacion = (req, res, next) => {
-    req.user = {
-        fullName: 'Ricardo Ferraris',
-        isAdmin: true
-    };
-    next();
-}
-
-const middlewareAutorizacion = (req, res, next) => {
-    if (req.user.isAdmin) next();
-    else res.status(403).send('Vos no tenes permisos');
-}
-
-
 // Router
 app.use("/api", routerProducto);
 

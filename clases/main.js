@@ -1,6 +1,9 @@
 // ENTREGA PROYECTO FINAL CODERHOUSE
 
 const fs = require("fs");
+// import moment from 'moment';
+const moment = require('moment'); // require
+
 
 // Check if the file exists
 let fileExists = fs.existsSync("productos.txt");
@@ -29,6 +32,8 @@ module.exports = class Contenedor {
         await fs.promises.readFile(this.nombreArchivo)
       );
       producto.id = contenido.length + 1;
+      producto.timestamp = moment().format('MMMM Do YYYY, h:mm:ss a');
+
       contenido.push(producto);
       await fs.promises.writeFile(
         this.nombreArchivo,
