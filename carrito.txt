@@ -1,0 +1,1 @@
+[{"title":"Disco de Frank Zappa","thumbnail":"FZ","price":"225","id":1},{"title":"Disco de Gorillaz","thumbnail":"Gorillaz","price":"145","id":2,"timestamp":"June 11th 2022, 6:45:36 pm"}]
