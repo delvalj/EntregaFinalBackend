@@ -6,20 +6,7 @@ const storage = multer({destinantion: "/upload"});
 
 let carritoContainer = require("../clases/carritoClass.js");
 
-const middlewareAutenticacion = (req, res, next) => {
-    req.user = {
-        fullName: 'Joaquin Del Val',
-        isAdmin: true
-    };
-    next();
-}
-
-const middlewareAutorizacion = (req, res, next) => {
-    if (req.user.isAdmin) next();
-    else res.status(403).send('Vos no tenes permisos');
-}
-
-routerCarrito.get("/carrito", middlewareAutenticacion, (req, res, next) => {
+routerCarrito.get("/carrito", (req, res, next) => {
     const mostrarProductos = async () => {
         const productos = new carritoContainer("carrito.txt");
         const showProductos = await productos.getAll();
@@ -28,7 +15,7 @@ routerCarrito.get("/carrito", middlewareAutenticacion, (req, res, next) => {
     mostrarProductos();
 });
 
-routerCarrito.get("/productos/:id", middlewareAutenticacion, middlewareAutorizacion, (req, res, next) => {
+routerCarrito.get("/carrito/:id", (req, res, next) => {
     let id = parseInt(req.params.id);
     const mostrarProdID = async () => {
         const productos = new carritoContainer("carrito.txt");
@@ -49,7 +36,7 @@ const productoSubido = storage.fields([
     },
 ]);
 
-routerCarrito.post("/productos", productoSubido, middlewareAutenticacion, middlewareAutorizacion, async (req, res, next) => {
+routerCarrito.post("/carrito", productoSubido, async (req, res, next) => {
     const subirProduct = async () => {
         let produc = new carritoContainer("carrito.txt");
         if (
@@ -72,7 +59,7 @@ routerCarrito.post("/productos", productoSubido, middlewareAutenticacion, middle
     subirProduct();
 });
 
-routerCarrito.delete("/carrito/:id", middlewareAutenticacion, middlewareAutorizacion, (req, res) => {
+routerCarrito.delete("/carrito/:id", (req, res) => {
     let id = parseInt(req.params.id);
     const eliminoPorID = async () => {
         const productos = new carritoContainer("carrito.txt");
